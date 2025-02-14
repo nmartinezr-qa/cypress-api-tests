@@ -1,0 +1,69 @@
+name: Cypress Tests
+
+# Define cuándo se ejecutará el workflow
+on:
+  push:
+    branches:
+      - master  # Cambia 'main' por la rama que desees monitorear
+  pull_request:
+    branches:
+      - master
+
+# Define los jobs (tareas) que se ejecutarán
+jobs:
+  cypress-run:
+    runs-on: ubuntu-latest  # Usa una máquina virtual con Ubuntu
+
+    steps:
+      # Paso 1: Clona el repositorio
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Paso 2: Configura Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18  # Cambia la versión según tu proyecto
+
+      # Paso 3: Cachea las dependencias y el binario de Cypress
+      - name: Cache dependencies and Cypress binary
+        uses: actions/cache@v4
+        with:
+            path: |
+              node_modules
+              ~/.cache/Cypress
+            key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+            restore-keys: |
+              ${{ runner.os }}-node-
+
+      # Paso 4: Instala dependencias
+      - name: Install dependencies
+        run: npm ci
+      
+      # Paso 5: Instala el binario de Cypress si no está presente
+      - name: Install Cypress binary if missing
+        run: npx cypress install
+
+      # Paso 6: Verifica la instalación de Cypress
+      - name: Verify Cypress installation
+        run: npx cypress verify
+
+      # Paso 7: Asegúrate de que los scripts de Cypress sean ejecutables (permisos)
+      - name: Fix permissions
+        run: chmod -R +x ./node_modules/.bin
+
+      # Paso 8: Asegúrate de que haya permiso para guardar cache de Cypress
+      - name: Fix permissions in Cypress cache
+        run: sudo chmod -R +x ~/.cache/Cypress
+
+      # Paso 9: Ejecuta las pruebas de Cypress
+      - name: Run Cypress tests
+        #run: npx cypress run --spec cypress/integration/smokeTest/*.js --headless
+        run: npx cypress run --spec cypress/e2e/users.spec.ts --headless
+        
+      # Paso 10: Sube los reportes como artefactos (opcional)
+      - name: Upload reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-reports
+          path: cypress/reports
