@@ -11,27 +11,30 @@ describe('Actualizar usuario y restaurar valores', () => {
     cy.request('GET', apiUrl).then((response) => {
       expect(response.status).to.eq(200);
       defaultUserData = response.body;
+      cy.log("Default data: " + JSON.stringify(defaultUserData));
     });
   });
 
   it('Debe actualizar los datos del usuario y verificar los cambios', () => {
     const updatedUser = {
       ...defaultUserData,
-      nombre: 'Nuevo Nombre',
+      username: 'Nuevo Nombre',
       email: 'nuevo@email.com'
     };
 
     // Actualizar usuario
     cy.request('PUT', apiUrl, updatedUser).then((response) => {
+      cy.log("Updated data: " + JSON.stringify(response.body));
       expect(response.status).to.eq(200);
-      expect(response.body.nombre).to.eq(updatedUser.nombre);
+      expect(response.body.username).to.eq(updatedUser.username);
       expect(response.body.email).to.eq(updatedUser.email);
     });
 
     // Verificar que los datos se actualizaron correctamente
     cy.request('GET', apiUrl).then((response) => {
+      cy.log("Updated data: " + JSON.stringify(response.body));
       expect(response.status).to.eq(200);
-      expect(response.body.nombre).to.eq(updatedUser.nombre);
+      expect(response.body.username).to.eq(updatedUser.username);
       expect(response.body.email).to.eq(updatedUser.email);
     });
   });
@@ -39,13 +42,16 @@ describe('Actualizar usuario y restaurar valores', () => {
   after(() => {
     // Restaurar los valores originales después de la prueba
     cy.request('PUT', apiUrl, defaultUserData).then((response) => {
+      cy.log("Reverting user data");  
+      cy.log("Default data: " + JSON.stringify(response.body));
       expect(response.status).to.eq(200);
     });
 
     // Verificar que los datos volvieron a su estado original
     cy.request('GET', apiUrl).then((response) => {
+      cy.log("Default data: " + JSON.stringify(response.body));
       expect(response.status).to.eq(200);
-      expect(response.body.nombre).to.eq(defaultUserData.usuername);
+      expect(response.body.username).to.eq(defaultUserData.username);
       expect(response.body.email).to.eq(defaultUserData.email);
       expect(response.body.password).to.eq(defaultUserData.password);
     });
