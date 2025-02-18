@@ -1,16 +1,16 @@
 {
-    "compilerOptions": {
-      "target": "ES6",
-      "module": "CommonJS",
-      "strict": true,
-      "esModuleInterop": true,
-      "skipLibCheck": true,
-      "forceConsistentCasingInFileNames": true,
-      "resolveJsonModule": true,
-      "outDir": "cypress/dist",
-      "types": ["cypress", "mocha", "chai"]
-    },
-    "include": [
-      "cypress/**/*.ts"
-    ]
-  }
+  "compilerOptions": {
+    "target": "ES6",
+    "module": "CommonJS",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "outDir": "cypress/dist",
+    "types": ["cypress", "mocha", "chai"]
+  },
+  "include": [
+    "cypress/**/*.ts"
+  ]
+}
